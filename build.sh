@@ -9,32 +9,33 @@ ln -sf busybox diff
 export PATH="$PATH:$(pwd)"
 
 # Check for required utilities
-if ! command -v cmp >/dev/null 2>&1 || ! command -v diff >/dev/null 2>&1; then
-  echo "Error: cmp/diff not found"
-  exit 1
-fi
+command -v cmp >/dev/null && command -v diff >/dev/null || {
+  echo "Missing required utilities"; exit 1
+}
 
-# Create Vercel directories
+# Create directories
 mkdir -p api public
 
-# Emscripten installation with validation
-if [ ! -f "emsdk/emsdk_env.sh" ]; then
+# Install Emscripten with full setup
+if [ ! -d "emsdk" ]; then
   echo "Installing Emscripten SDK..."
-  rm -rf emsdk  # Clean incomplete installations
   git clone https://github.com/emscripten-core/emsdk.git
   cd emsdk
-  ./emsdk install latest
+  ./emsdk install latest --permanent
   ./emsdk activate latest
   cd ..
 fi
 
-# Always activate and source in correct context
-cd emsdk
-source ./emsdk_env.sh
-cd ..
+# Verify emsdk installation
+if [ -f "emsdk/emsdk_env.sh" ]; then
+  echo "Setting up Emscripten environment..."
+  source emsdk/emsdk_env.sh
+else
+  echo "Emscripten installation failed!" >&2
+  exit 1
+fi
 
-# Compile to WebAssembly
-echo "Compiling tieba.c..."
+# Compile with verified paths
 emcc tieba.c -o api/tieba.mjs \
   -s MODULARIZE=1 \
   -s EXPORT_ES6=1 \
@@ -43,13 +44,9 @@ emcc tieba.c -o api/tieba.mjs \
   -s ENVIRONMENT=web \
   -s SINGLE_FILE=1 \
   -s WASM=1 \
-  -s ASSERTIONS=0 \
   -s ALLOW_MEMORY_GROWTH=1 \
   -O3
-# Create public content
+
+# Create placeholder
 touch public/.gitkeep
 echo "Build successful"
-
-# Convert WASM to base64 and embed in environment variable
-WASM_BASE64=$(base64 -w0 api/tieba.wasm)
-echo "export WASM_BINARY='$WASM_BASE64'" >> .env
