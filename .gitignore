@@ -1,0 +1,5 @@
+.vscode
+libmicrohttpd-1.0.1
+*.html
+*.py
+*.exe
