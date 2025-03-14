@@ -2,8 +2,8 @@
     "version": 2,
     "functions": {
       "public/index.sh": {
-        "memory": 4096,
-        "maxDuration": 60,
+        "memory": 1024,
+        "maxDuration": 30,
         "runtime": "provided"
       }
     },
