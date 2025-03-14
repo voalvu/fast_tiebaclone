@@ -29,7 +29,7 @@ if [ ! -d "vendor" ]; then
     git config --global user.email "builder@vercel.com"
     git add vendor/
     git commit -m "[CI] Add pre-built dependencies"
-    git push "https://${GIT_TOKEN}@github.com/voalvu/fast-tiebaclone.git" main
+    git push "https://${GIT_TOKEN}@github.com/voalvu/fast_tiebaclone.git" main
     touch .vendor_committed
   fi
 fi
