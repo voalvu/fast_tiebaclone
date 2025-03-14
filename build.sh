@@ -39,12 +39,17 @@ emcc tieba.c -o api/tieba.mjs \
   -s MODULARIZE=1 \
   -s EXPORT_ES6=1 \
   -s EXPORTED_FUNCTIONS='["_handle_request"]' \
-  -s EXPORTED_RUNTIME_METHODS='["cwrap","UTF8ToString"]' \
-  -s ENVIRONMENT='web,worker,shell' \
+  -s EXPORTED_RUNTIME_METHODS='["cwrap"]' \
+  -s ENVIRONMENT=web \
   -s SINGLE_FILE=1 \
-  -s ASSERTIONS=1 \
+  -s WASM=1 \
+  -s ASSERTIONS=0 \
   -s ALLOW_MEMORY_GROWTH=1 \
   -O3
 # Create public content
 touch public/.gitkeep
 echo "Build successful"
+
+# Convert WASM to base64 and embed in environment variable
+WASM_BASE64=$(base64 -w0 api/tieba.wasm)
+echo "export WASM_BINARY='$WASM_BASE64'" >> .env

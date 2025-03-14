@@ -5,5 +5,8 @@
         "src": "/(.*)",
         "dest": "/api/index.js"
       }
-    ]
+    ],
+    "env": {
+        "WASM_BINARY": "$WASM_BINARY"
+      }
   }
