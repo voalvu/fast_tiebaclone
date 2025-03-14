@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -ex
 
 # Install Emscripten
 if [ ! -d "emsdk" ]; then
@@ -11,7 +11,7 @@ if [ ! -d "emsdk" ]; then
   cd ..
 fi
 
-# Build with WASM-compatible flags
+# Build WASM module
 source emsdk/emsdk_env.sh
 mkdir -p api
 
@@ -23,9 +23,6 @@ emcc tieba.c -o api/tieba.mjs \
   -s ENVIRONMENT='web,worker' \
   -s SINGLE_FILE=1 \
   -s ASSERTIONS=1 \
-  -s FILESYSTEM=0 \
-  -s DYNAMIC_EXECUTION=0 \
-  -s STRICT=1 \
   -O3
 
-echo "Built WASM module to api/tieba.mjs"
+echo "Build complete"
