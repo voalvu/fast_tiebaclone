@@ -1,7 +1,10 @@
 #!/bin/bash
 set -ex
 
-# Install Emscripten
+# Create required Vercel directories
+mkdir -p api public
+
+# Rest of your existing build script
 if [ ! -d "emsdk" ]; then
   git clone https://github.com/emscripten-core/emsdk.git
   cd emsdk
@@ -11,9 +14,7 @@ if [ ! -d "emsdk" ]; then
   cd ..
 fi
 
-# Build WASM module
 source emsdk/emsdk_env.sh
-mkdir -p api
 
 emcc tieba.c -o api/tieba.mjs \
   -s MODULARIZE=1 \
@@ -24,5 +25,8 @@ emcc tieba.c -o api/tieba.mjs \
   -s SINGLE_FILE=1 \
   -s ASSERTIONS=1 \
   -O3
+
+# Create minimal public content (can be empty)
+touch public/.gitkeep
 
 echo "Build complete"
