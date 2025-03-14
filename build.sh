@@ -8,38 +8,33 @@ ln -sf busybox cmp
 ln -sf busybox diff
 export PATH="$PATH:$(pwd)"
 
-# Check for required utilities (cmp and diff)
+# Check for required utilities
 if ! command -v cmp >/dev/null 2>&1 || ! command -v diff >/dev/null 2>&1; then
-  echo "Error: cmp and diff utilities are required. Please install diffutils using 'pacman -Syu' followed by 'pacman -S diffutils' in MINGW64."
+  echo "Error: cmp/diff not found"
   exit 1
 fi
 
-# Create required Vercel directories
+# Create Vercel directories
 mkdir -p api public
 
-# Install and configure Emscripten SDK if not already present
-if [ ! -d "emsdk" ]; then
-  echo "Cloning Emscripten SDK..."
+# Emscripten installation with validation
+if [ ! -f "emsdk/emsdk_env.sh" ]; then
+  echo "Installing Emscripten SDK..."
+  rm -rf emsdk  # Clean incomplete installations
   git clone https://github.com/emscripten-core/emsdk.git
   cd emsdk
-  echo "Installing latest Emscripten..."
   ./emsdk install latest
-  echo "Activating latest Emscripten..."
   ./emsdk activate latest
   cd ..
 fi
 
-# Ensure the Emscripten environment is sourced
-if [ -f "emsdk/emsdk_env.sh" ]; then
-  echo "Sourcing Emscripten environment..."
-  source emsdk/emsdk_env.sh
-else
-  echo "Error: emsdk/emsdk_env.sh not found. Emscripten SDK setup failed."
-  exit 1
-fi
+# Always activate and source in correct context
+cd emsdk
+source ./emsdk_env.sh
+cd ..
 
-# Compile the C code to WebAssembly
-echo "Compiling tieba.c to WebAssembly..."
+# Compile to WebAssembly
+echo "Compiling tieba.c..."
 emcc tieba.c -o api/tieba.mjs \
   -s MODULARIZE=1 \
   -s EXPORT_ES6=1 \
@@ -51,7 +46,6 @@ emcc tieba.c -o api/tieba.mjs \
   -s ALLOW_MEMORY_GROWTH=1 \
   -O3
 
-# Create minimal public content (can be empty)
+# Create public content
 touch public/.gitkeep
-
-echo "Build complete"
+echo "Build successful"
