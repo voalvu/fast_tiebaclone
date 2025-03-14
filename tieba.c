@@ -218,8 +218,13 @@ enum MHD_Result handle_request(void *cls, struct MHD_Connection *connection,
 
 int main() {
     init_data();
+    
+    // Get port from environment variable (Vercel requirement)
+    const char *port_str = getenv("PORT");
+    int port = port_str ? atoi(port_str) : 8888;
+
     struct MHD_Daemon *daemon = MHD_start_daemon(
-        MHD_USE_THREAD_PER_CONNECTION, PORT, NULL, NULL,
+        MHD_USE_THREAD_PER_CONNECTION, port, NULL, NULL,
         &handle_request, NULL, MHD_OPTION_END);
     
     if (!daemon) {
@@ -227,9 +232,14 @@ int main() {
         return 1;
     }
     
-    printf("Server running on port %d. Press enter to stop.\n", PORT);
-    getchar();
+    printf("Server running on port %d\n", port);
     
+    // Vercel-compatible keep-alive
+    while(1) {
+        sleep(1);
+    }
+    
+    // Cleanup (though this will never be reached)
     MHD_stop_daemon(daemon);
     for (int i = 0; i < data.post_count; i++) {
         free(data.posts[i].user);

@@ -44,4 +44,18 @@ fi
 # Build main binary
 echo "=== Compiling application ==="
 mkdir -p public
-gcc -o public/tieba tieba.c -I./vendor/include -L./vendor/lib -lmicrohttpd -lpthread
+# Compile as position-independent executable
+gcc -fPIE -o public/tieba tieba.c \
+  -I./vendor/include \
+  -L./vendor/lib \
+  -lmicrohttpd \
+  -lpthread \
+  -static
+
+# Create vercel function wrapper
+cat > public/index.sh <<EOF
+#!/bin/bash
+exec ./tieba
+EOF
+
+chmod +x public/tieba public/index.sh
