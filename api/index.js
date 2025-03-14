@@ -1,25 +1,41 @@
+import tiebaModule from './tieba.mjs';
+
 export default async function handler(request) {
-    const { method } = request;
-    const body = method === 'POST' ? await request.text() : null;
+  const { method } = request;
+  const body = method === 'POST' ? await request.text() : null;
 
-    // Import the module factory and instantiate it
-    const createModule = (await import('./tieba.js')).default;
-    const module = await createModule();
-    // Wrap the C function using cwrap
-    const handle_request = module.cwrap('handle_request', 'string', ['string', 'string']);
+  // Initialize WASM module
+  const module = await tiebaModule({
+    noInitialRun: true,
+    locateFile: (path) => {
+      if (path.endsWith('.wasm')) {
+        return `data:application/wasm;base64,${Buffer.from(module.wasmBinary).toString('base64')}`;
+      }
+      return path;
+    }
+  });
 
-    const response = handle_request(method, body || "");
-    const [header, content] = response.split('\r\n\r\n', 2);
+  // Create wrapped function
+  const handleRequest = module.cwrap('handle_request', 'string', ['string', 'string']);
+  
+  // Process request
+  const response = handleRequest(method.toUpperCase(), body || "");
+  const [statusLine, ...headers] = response.split('\r\n');
+  const [_, status] = statusLine.split(' ');
+  
+  const headersObj = Object.fromEntries(
+    headers.map(h => {
+      const [key, value] = h.split(': ');
+      return [key.toLowerCase(), value];
+    })
+  );
 
-    const headers = new Headers();
-    header.split('\r\n').forEach(line => {
-        const [key, value] = line.split(': ');
-        if (key && value) headers.set(key, value);
-    });
-
-    return new Response(content, { headers });
+  return new Response(response.split('\r\n\r\n')[1] || "", {
+    status: parseInt(status),
+    headers: headersObj
+  });
 }
 
 export const config = {
-    runtime: 'edge'
+  runtime: 'edge'
 };

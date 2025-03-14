@@ -1,28 +1,31 @@
 #!/bin/bash
 set -e
 
-# Check if Emscripten is available
-if ! command -v emcc >/dev/null 2>&1; then
-    echo "Emscripten not found. Installing..."
-    git clone https://github.com/emscripten-core/emsdk.git || true
-    cd emsdk
-    ./emsdk install latest
-    ./emsdk activate latest
-    source ./emsdk_env.sh
-    cd ..
+# Install Emscripten
+if [ ! -d "emsdk" ]; then
+  git clone https://github.com/emscripten-core/emsdk.git
+  cd emsdk
+  ./emsdk install latest
+  ./emsdk activate latest
+  source ./emsdk_env.sh
+  cd ..
 fi
 
-# Ensure output directory exists
+# Build with WASM-compatible flags
+source emsdk/emsdk_env.sh
 mkdir -p api
 
-# Compile to WebAssembly as an ES6 module
-emcc -o api/tieba.js tieba.c \
-    -s MODULARIZE=1 \
-    -s EXPORT_ES6=1 \
-    -s EXPORTED_FUNCTIONS='["_handle_request"]' \
-    -s EXPORTED_RUNTIME_METHODS='["cwrap"]' \
-    -s ENVIRONMENT='web' \
-    -s SINGLE_FILE=1 \
-    -O3
+emcc tieba.c -o api/tieba.mjs \
+  -s MODULARIZE=1 \
+  -s EXPORT_ES6=1 \
+  -s EXPORTED_FUNCTIONS='["_handle_request"]' \
+  -s EXPORTED_RUNTIME_METHODS='["cwrap"]' \
+  -s ENVIRONMENT='web,worker' \
+  -s SINGLE_FILE=1 \
+  -s ASSERTIONS=1 \
+  -s FILESYSTEM=0 \
+  -s DYNAMIC_EXECUTION=0 \
+  -s STRICT=1 \
+  -O3
 
-echo "WASM compiled to api/tieba.js (ES6 module with embedded .wasm)"
+echo "Built WASM module to api/tieba.mjs"
