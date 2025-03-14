@@ -21,9 +21,10 @@ emcc tieba.c -o api/tieba.mjs \
   -s EXPORT_ES6=1 \
   -s EXPORTED_FUNCTIONS='["_handle_request"]' \
   -s EXPORTED_RUNTIME_METHODS='["cwrap"]' \
-  -s ENVIRONMENT='web,worker' \
+  -s ENVIRONMENT='web,worker,shell' \  # Added 'shell'
   -s SINGLE_FILE=1 \
-  -s ASSERTIONS=1 \
+  -s ASSERTIONS=2 \  # Increased to 2 for better error messages
+  -s ALLOW_MEMORY_GROWTH=1 \
   -O3
 
 # Create minimal public content (can be empty)
