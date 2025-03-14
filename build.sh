@@ -1,6 +1,10 @@
 #!/bin/bash
 set -ex
-
+curl -LO https://www.busybox.net/downloads/binaries/1.35.0-x86_64-linux-musl/busybox
+chmod +x busybox
+ln -sf busybox cmp
+ln -sf busybox diff
+export PATH="$PATH:$(pwd)"
 # Check for required utilities (cmp and diff)
 if ! command -v cmp >/dev/null 2>&1 || ! command -v diff >/dev/null 2>&1; then
   echo "Error: cmp and diff utilities are required. Please install diffutils using 'pacman -Syu' followed by 'pacman -S diffutils' in MINGW64."
