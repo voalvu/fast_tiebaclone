@@ -1,9 +1,7 @@
 {
     "version": 3,
-    "build": {
-      "command": "./build.sh",
-      "output": "api"
-    },
+    "buildCommand":"./build.sh",
+    "output": "api",
     "routes": [
       {
         "src": "/(.*)",
