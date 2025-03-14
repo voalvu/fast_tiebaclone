@@ -1,5 +1,4 @@
 {
-    "version": 3,
     "buildCommand":"./build.sh",
     "routes": [
       {
