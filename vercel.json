@@ -10,11 +10,5 @@
             "src": "/(.*)",
             "dest": "/api/index.js"
         }
-    ],
-    "builds": [
-        {
-            "src": "api/tieba.js",
-            "use": "@vercel/static"
-        }
     ]
 }

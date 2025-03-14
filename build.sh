@@ -4,7 +4,6 @@ set -e
 # Check if Emscripten is available
 if ! command -v emcc >/dev/null 2>&1; then
     echo "Emscripten not found. Installing..."
-    # Install Emscripten (minimal setup for this script)
     git clone https://github.com/emscripten-core/emsdk.git || true
     cd emsdk
     ./emsdk install latest
