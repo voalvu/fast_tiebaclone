@@ -40,7 +40,7 @@ emcc tieba.c -o api/tieba.mjs \
 touch public/.gitkeep
 echo "Build successful"
 
-WASM_BINARY=$(sed -n "s/.*var[[:space:]]\+wasmBinary[[:space:]]*=[[:space:]]*['\"]$[^'\"]*$['\"].*/\1/p" api/tieba.mjs)
+WASM_BINARY=$(sed -n "s|.*var[[:space:]]\+wasmBinary[[:space:]]*=[[:space:]]*['\"]$[^'\"]*$['\"].*|\1|p" api/tieba.mjs)
 if [ -z "$WASM_BINARY" ]; then
   echo "Failed to extract WASM_BINARY"
   exit 1
