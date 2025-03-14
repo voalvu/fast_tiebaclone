@@ -1,20 +1,20 @@
 {
     "version": 2,
     "functions": {
-      "public/index.sh": {
-        "memory": 1024,
-        "maxDuration": 30,
-        "runtime": "provided"
-      }
+        "api/index.js": {
+            "runtime": "edge"
+        }
     },
     "routes": [
-      {
-        "src": "/(.*)",
-        "dest": "/public/index.sh"
-      }
+        {
+            "src": "/(.*)",
+            "dest": "/api/index.js"
+        }
     ],
-    "env": {
-      "NODE_ENV": "production",
-      "GIT_TOKEN": ""
-    }
-  }
+    "builds": [
+        {
+            "src": "api/tieba.js",
+            "use": "@vercel/static"
+        }
+    ]
+}
