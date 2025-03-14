@@ -14,7 +14,7 @@ mkdir -p api public
 echo "Installing Emscripten SDK..."
 git clone https://github.com/emscripten-core/emsdk.git
 cd emsdk
-./emsdk update
+git pull
 ./emsdk install latest --permanent
 ./emsdk activate latest
 cd ..
