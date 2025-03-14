@@ -39,14 +39,12 @@ emcc tieba.c -o api/tieba.mjs \
   -s MODULARIZE=1 \
   -s EXPORT_ES6=1 \
   -s EXPORTED_FUNCTIONS='["_handle_request"]' \
-  -s EXPORTED_RUNTIME_METHODS='["cwrap","UTF8ToString"]' \  # Add UTF8ToString
+  -s EXPORTED_RUNTIME_METHODS='["cwrap","UTF8ToString"]' \
   -s ENVIRONMENT='web,worker,shell' \
   -s SINGLE_FILE=1 \
-  -s ASSERTIONS=1 \  # Reduce assertions for better performance
+  -s ASSERTIONS=1 \
   -s ALLOW_MEMORY_GROWTH=1 \
-  -s TEXTDECODER=0 \  # Disable text decoder polyfill
   -O3
-
 # Create public content
 touch public/.gitkeep
 echo "Build successful"
