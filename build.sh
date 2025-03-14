@@ -15,12 +15,14 @@ fi
 # Ensure output directory exists
 mkdir -p api
 
-# Compile to WebAssembly with optimizations
+# Compile to WebAssembly as an ES6 module
 emcc -o api/tieba.js tieba.c \
+    -s MODULARIZE=1 \
+    -s EXPORT_ES6=1 \
     -s EXPORTED_FUNCTIONS='["_handle_request"]' \
     -s EXPORTED_RUNTIME_METHODS='["cwrap"]' \
     -s ENVIRONMENT='web' \
     -s SINGLE_FILE=1 \
     -O3
 
-echo "WASM compiled to api/tieba.js (includes embedded .wasm)"
+echo "WASM compiled to api/tieba.js (ES6 module with embedded .wasm)"
