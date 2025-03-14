@@ -1,10 +1,13 @@
 #!/bin/bash
 set -ex
+
+# Download and set up busybox
 curl -LO https://www.busybox.net/downloads/binaries/1.35.0-x86_64-linux-musl/busybox
 chmod +x busybox
 ln -sf busybox cmp
 ln -sf busybox diff
 export PATH="$PATH:$(pwd)"
+
 # Check for required utilities (cmp and diff)
 if ! command -v cmp >/dev/null 2>&1 || ! command -v diff >/dev/null 2>&1; then
   echo "Error: cmp and diff utilities are required. Please install diffutils using 'pacman -Syu' followed by 'pacman -S diffutils' in MINGW64."
@@ -23,14 +26,17 @@ if [ ! -d "emsdk" ]; then
   ./emsdk install latest
   echo "Activating latest Emscripten..."
   ./emsdk activate latest
-  echo "Setting up Emscripten environment..."
-  source ./emsdk_env.sh
   cd ..
 fi
 
 # Ensure the Emscripten environment is sourced
-echo "Sourcing Emscripten environment..."
-source emsdk/emsdk_env.sh
+if [ -f "emsdk/emsdk_env.sh" ]; then
+  echo "Sourcing Emscripten environment..."
+  source emsdk/emsdk_env.sh
+else
+  echo "Error: emsdk/emsdk_env.sh not found. Emscripten SDK setup failed."
+  exit 1
+fi
 
 # Compile the C code to WebAssembly
 echo "Compiling tieba.c to WebAssembly..."
