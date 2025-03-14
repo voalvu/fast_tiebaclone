@@ -10,3 +10,4 @@ libmicrohttpd-1.0.1
 /diff
 libmicrohttpd-*
 .vendor_committed
+*.go
