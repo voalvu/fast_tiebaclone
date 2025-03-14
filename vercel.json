@@ -1,14 +1,5 @@
 {
     "version": 2,
-    "builds": [
-      {
-        "src": "build.sh",
-        "use": "@vercel/static-build",
-        "config": {
-          "buildCommand": "chmod +x build.sh && ./build.sh"
-        }
-      }
-    ],
     "functions": {
       "public/index.sh": {
         "memory": 4096,
