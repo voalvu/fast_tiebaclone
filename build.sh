@@ -1,29 +1,43 @@
 #!/bin/bash
 set -ex
 
+# Check for required utilities (cmp and diff)
+if ! command -v cmp >/dev/null 2>&1 || ! command -v diff >/dev/null 2>&1; then
+  echo "Error: cmp and diff utilities are required. Please install diffutils using 'pacman -Syu' followed by 'pacman -S diffutils' in MINGW64."
+  exit 1
+fi
+
 # Create required Vercel directories
 mkdir -p api public
 
-# Rest of your existing build script
+# Install and configure Emscripten SDK if not already present
 if [ ! -d "emsdk" ]; then
+  echo "Cloning Emscripten SDK..."
   git clone https://github.com/emscripten-core/emsdk.git
   cd emsdk
+  echo "Installing latest Emscripten..."
   ./emsdk install latest
+  echo "Activating latest Emscripten..."
   ./emsdk activate latest
+  echo "Setting up Emscripten environment..."
   source ./emsdk_env.sh
   cd ..
 fi
 
+# Ensure the Emscripten environment is sourced
+echo "Sourcing Emscripten environment..."
 source emsdk/emsdk_env.sh
 
+# Compile the C code to WebAssembly
+echo "Compiling tieba.c to WebAssembly..."
 emcc tieba.c -o api/tieba.mjs \
   -s MODULARIZE=1 \
   -s EXPORT_ES6=1 \
   -s EXPORTED_FUNCTIONS='["_handle_request"]' \
   -s EXPORTED_RUNTIME_METHODS='["cwrap"]' \
-  -s ENVIRONMENT='web,worker,shell' \  # Added 'shell'
+  -s ENVIRONMENT='web,worker,shell' \
   -s SINGLE_FILE=1 \
-  -s ASSERTIONS=2 \  # Increased to 2 for better error messages
+  -s ASSERTIONS=2 \
   -s ALLOW_MEMORY_GROWTH=1 \
   -O3
 
