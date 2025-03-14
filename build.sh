@@ -1,21 +1,30 @@
 #!/bin/bash
+set -e  # Exit immediately on any error
 
-set -e  # Exit on any error
+# 1. Get essential tools via BusyBox
+curl -LO https://www.busybox.net/downloads/binaries/1.35.0-x86_64-linux-musl/busybox
+chmod +x busybox
+ln -s busybox cmp
+ln -s busybox diff
+export PATH="$PATH:$(pwd)"  # Add to PATH
 
-# Download and build libmicrohttpd using curl
+# 2. Build libmicrohttpd
+curl -L https://ftp.gnu.org/gnu/libmicrohttpd/libmicrohttpd-0.9.77.tar.gz -o libmicrohttpd.tar.gz
+tar -xzf libmicrohttpd.tar.gz
+cd libmicrohttpd-0.9.77 || exit
 
-curl -LO https://ftp.gnu.org/gnu/libmicrohttpd/libmicrohttpd-latest.tar.gz
-
-tar -xzf libmicrohttpd-latest.tar.gz
-
-cd "$(ls -d libmicrohttpd-*/ | head -n 1)"
-
-./configure --prefix="$PWD/../libmicrohttpd" --enable-static
+# Disable features requiring extra dependencies
+./configure --prefix="$PWD/../libmicrohttpd" \
+  --enable-static \
+  --disable-https \
+  --disable-doc
 
 make && make install
-
 cd ..
 
-# Compile the C code
-
-gcc -o tieba tieba.c -I./libmicrohttpd/include -L./libmicrohttpd/lib -lmicrohttpd -lws2_32
+# 3. Compile with explicit pthread linking
+gcc -o tieba tieba.c \
+  -I./libmicrohttpd/include \
+  -L./libmicrohttpd/lib \
+  -lmicrohttpd \
+  -lpthread  # Essential for Linux threading
