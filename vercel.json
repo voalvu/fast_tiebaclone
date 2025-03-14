@@ -1,0 +1,5 @@
+{
+    "build": {
+      "command": "wget https://ftp.gnu.org/gnu/libmicrohttpd/libmicrohttpd-latest.tar.gz && tar -xzf libmicrohttpd-latest.tar.gz && cd libmicrohttpd-* && ./configure --prefix=$PWD/../libmicrohttpd && make && make install && cd .. && gcc -o tieba tieba.c -I./libmicrohttpd/include -L./libmicrohttpd/lib -lmicrohttpd -lws2_32"
+    }
+  }
