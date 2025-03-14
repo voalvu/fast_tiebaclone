@@ -3,3 +3,10 @@ libmicrohttpd-1.0.1
 *.html
 *.py
 *.exe
+.env
+.commit_marker
+/busybox
+/cmp
+/diff
+libmicrohttpd-*
+.vendor_committed
