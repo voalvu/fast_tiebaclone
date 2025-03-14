@@ -5,18 +5,19 @@ export default async function handler(request) {
     const { method } = request;
     const body = method === 'POST' ? await request.text() : null;
     
-    // Initialize WASM module
+    // Initialize WASM module with proper config
     const module = await wasmModule({
       noInitialRun: true,
-      instantiateWasm: (imports, success) => {
-        WebAssembly.instantiate(module.wasmBinary, imports)
-          .then(output => success(output.instance))
-          .catch(err => console.error(err));
-        return {};
+      // Remove manual instantiateWasm and use default loader
+      locateFile: (path) => {
+        if(path.endsWith('.wasm')) {
+          return new URL('./tieba.wasm', import.meta.url).href;
+        }
+        return path;
       }
     });
 
-    // Create wrapped function
+    // Create wrapped function with proper types
     const handleRequest = module.cwrap('handle_request', 'string', ['string', 'string']);
     
     // Process request
@@ -24,16 +25,17 @@ export default async function handler(request) {
     const [headers, content] = response.split('\r\n\r\n');
     
     return new Response(content || "", {
-      headers: Object.fromEntries(
+      headers: headers ? Object.fromEntries(
         headers.split('\r\n')
           .filter(Boolean)
           .map(h => {
             const [key, value] = h.split(': ');
             return [key.toLowerCase(), value];
           })
-      )
+      ) : {}
     });
   } catch (error) {
+    console.error('Handler error:', error);
     return new Response(`Error: ${error.message}`, { status: 500 });
   }
 }

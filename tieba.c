@@ -79,6 +79,25 @@ char *generate_posts_html() {
     return html;
 }
 
+void url_decode(char *dst, const char *src) {
+    char a, b;
+    while (*src) {
+      if ((*src == '%') && (a = src[1]) && (b = src[2]) && isxdigit(a) && isxdigit(b)) {
+        if (a >= 'a') a -= 'a'-'A';
+        if (a >= 'A') a -= ('A' - 10);
+        else a -= '0';
+        if (b >= 'a') b -= 'a'-'A';
+        if (b >= 'A') b -= ('A' - 10);
+        else b -= '0';
+        *dst++ = 16*a + b;
+        src += 3;
+      } else {
+        *dst++ = *src++;
+      }
+    }
+    *dst = '\0';
+  }
+
 // Parse POST data (e.g., "u=user&c=caption&b=barId")
 void parse_post_data(const char *input, char **user, char **caption, char **barId) {
     *user = *caption = *barId = NULL;
@@ -86,7 +105,9 @@ void parse_post_data(const char *input, char **user, char **caption, char **barI
     char *dup = strdup(input);
     char *token = strtok(dup, "&");
     while (token) {
-        char *key = token;
+        char decoded_token[256];
+        url_decode(decoded_token, token);
+        char *key = decoded_token;
         char *value = strchr(token, '=');
         if (value) {
             *value = '\0';
@@ -113,9 +134,10 @@ char *handle_request(const char *method, const char *body) {
     if (strcmp(method, "GET") == 0) {
         char *posts_html = generate_posts_html();
         response = malloc(strlen(HTML_BASE) + strlen(CSS) + strlen(FORM) + strlen(posts_html) + 64);
-        sprintf(response, "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n%s",
-                sprintf(response + 64, HTML_BASE, CSS, FORM, posts_html));
-        free(posts_html);
+        char *content = malloc(strlen(HTML_BASE) + strlen(CSS) + strlen(FORM) + strlen(posts_html) + 1);
+        sprintf(content, HTML_BASE, CSS, FORM, posts_html);
+        sprintf(response, "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n%s", content);
+        free(content);
     } else if (strcmp(method, "POST") == 0 && body) {
         char *user = NULL, *caption = NULL, *barId = NULL;
         parse_post_data(body, &user, &caption, &barId);
