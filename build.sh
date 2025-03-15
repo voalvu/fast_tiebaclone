@@ -29,7 +29,6 @@ fi
 emcc tieba.c -o api/tieba.mjs \
   -s MODULARIZE=1 \
   -s EXPORT_ES6=1 \
-  -s USE_ES6_IMPORT_META=0 \  # Add this line
   -s EXPORTED_FUNCTIONS='["_handle_request"]' \
   -s EXPORTED_RUNTIME_METHODS='["cwrap"]' \
   -s ENVIRONMENT=web,worker \  # Changed from just 'worker'
