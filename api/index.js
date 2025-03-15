@@ -2,13 +2,18 @@ import wasmModule from './tieba.mjs';
 
 export default async function handler(request) {
   try {
-    // Mock the location object to prevent 'href' errors
-    globalThis.location = { href: request.url };
+    // Build a full URL from the request
+    const protocol = request.headers.get('x-forwarded-proto') || 'https';
+    const host = request.headers.get('host');
+    const fullUrl = `${protocol}://${host}${request.url}`;
+
+    // Set globalThis.location with the full URL
+    globalThis.location = { href: fullUrl };
 
     const { method } = request;
     const body = method === 'POST' ? await request.text() : null;
 
-    // Initialize WASM module asynchronously
+    // Initialize the WASM module
     const module = await wasmModule({
       noInitialRun: true
     });
