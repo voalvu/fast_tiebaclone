@@ -2,6 +2,9 @@ import wasmModule from './tieba.mjs';
 
 export default async function handler(request) {
   try {
+    // Mock the location object to prevent 'href' errors
+    globalThis.location = { href: request.url };
+
     const { method } = request;
     const body = method === 'POST' ? await request.text() : null;
 
@@ -13,21 +16,16 @@ export default async function handler(request) {
     const handleRequest = module.cwrap('handle_request', 'string', ['string', 'string']);
     const response = handleRequest(method.toUpperCase(), body || "");
 
-    const [headers, content] = response.split('\r\n\r\n');
+    // Parse the response correctly
+    const [headersSection, content] = response.split('\r\n\r\n');
+    const headerLines = headersSection.split('\r\n');
+    const statusLine = headerLines[0]; // e.g., "HTTP/1.1 200 OK"
+    const headers = headerLines.slice(1).filter(Boolean).map(h => h.split(': '));
+    const statusCode = parseInt(statusLine.split(' ')[1], 10); // Extract "200" from "HTTP/1.1 200 OK"
+
     return new Response(content || "", {
-      headers: headers
-        ? Object.fromEntries(
-            headers
-              .split('\r\n')
-              .filter(Boolean)
-              .map((h) => h.split(': '))
-          )
-        : {},
-      status: response.startsWith('HTTP/1.1 200')
-        ? 200
-        : response.startsWith('HTTP/1.1 302')
-        ? 302
-        : 400
+      status: statusCode,
+      headers: Object.fromEntries(headers)
     });
   } catch (error) {
     console.error('Handler error:', error);
