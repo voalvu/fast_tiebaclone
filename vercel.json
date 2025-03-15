@@ -1,12 +1,9 @@
 {
-    "buildCommand":"chmod +x ./build.sh && ./build.sh",
+    "buildCommand": "chmod +x ./build.sh && ./build.sh",
     "routes": [
       {
         "src": "/(.*)",
         "dest": "/api/index.js"
       }
-    ],
-    "env": {
-        "WASM_BINARY": "$WASM_BINARY"
-      }
+    ]
   }

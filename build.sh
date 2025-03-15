@@ -31,21 +31,10 @@ emcc tieba.c -o api/tieba.mjs \
   -s EXPORT_ES6=1 \
   -s EXPORTED_FUNCTIONS='["_handle_request"]' \
   -s EXPORTED_RUNTIME_METHODS='["cwrap"]' \
-  -s ENVIRONMENT=web \
-  -s SINGLE_FILE=1 \
+  -s ENVIRONMENT=node \
   -s WASM=1 \
   -s ALLOW_MEMORY_GROWTH=1 \
   -O3
 
 touch public/.gitkeep
 echo "Build successful"
-
-# Extract the WASM data URL directly using the data:application/octet-stream pattern
-WASM_BINARY=$(grep -oE "data:application/octet-stream;base64,[^']+" api/tieba.mjs | head -1)
-if [ -z "$WASM_BINARY" ]; then
-  echo "Failed to extract WASM_BINARY"
-  exit 1
-fi
-
-echo "WASM_BINARY=$WASM_BINARY" > .env
-echo "WASM_BINARY environment variable saved to .env"
