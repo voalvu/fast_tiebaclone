@@ -1,6 +1,5 @@
 .vscode
 libmicrohttpd-1.0.1
-*.html
 *.py
 *.exe
 .env
@@ -15,4 +14,3 @@ api/package.json
 api/tieba.mjs
 emsdk/
 my-wasm-app/
-public/

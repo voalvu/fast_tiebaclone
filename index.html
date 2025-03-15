@@ -1,0 +1,92 @@
+<html>
+
+<head>
+    <title>tieba</title>
+    <style>
+        .cdiv{
+            outline: solid;
+            padding:1%;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        let chars = []
+        Math.floor(Math.random()*10)
+
+        for (let i = 0; i < 62; i++) {
+            if (i < 26) {
+                // Lowercase letters (a-z)
+                chars.push(String.fromCharCode(97 + i)); // 97 is 'a'
+            } else if (i < 52) {
+                // Uppercase letters (A-Z)
+                chars.push(String.fromCharCode(65 + (i - 26))); // 65 is 'A'
+            } else {
+                // Digits (0-9)
+                chars.push(String.fromCharCode(48 + (i - 52))); // 48 is '0'
+            }
+        }
+        //const users = []
+        const users = Array.from({length: 10},()=>{
+            let nameString = ''
+            for(let j = 0; j<Math.floor(Math.random()*15+3); j++){
+            
+                console.log(chars,nameString)
+                nameString+=chars[Math.floor(Math.random()*62)]
+            }
+            return nameString
+        })
+        console.log(users)
+        console.log(users.length)
+        bars = [{id:43959,name:"civil engineer bar"},{id:55689,name:"tsoding fan bar"}]        
+        console.log(bars)
+        let posts =[{
+            caption:"i really did",
+            replies:10,
+            barId:43959
+        },{
+            replies:10,
+            img:'imgur.com'
+        }]
+        let n = 10
+        nposts = Array.from({length:n},()=>{return {replies:Math.floor(Math.random(10))}})
+        nposts.map(n=>posts.push(n))
+        console.log( Array.from({length:10},()=>{return {replies:Math.random(10)}}))
+        console.log(posts)
+        for(let i = 0; i<10; i++){
+            const cdiv = document.createElement('div')
+            cdiv.classList.add("cdiv")
+            const cbar = document.createElement('p')
+            const bName = bars.filter(b=>b.id==posts[i].barId)
+            cbar.innerText = bName.length===1 ? bName[0].name : null
+            console.log(bars)
+            console.log(bars.filter(b=>b.id==posts[i].barId).name)
+            const c = document.createElement('p')
+            cdiv.id = users[i]
+            c.innerText =   `${posts[i].caption!==undefined ? posts[i].caption : ''} replycount: ${posts[i].replies!==undefined ? posts[i].replies : null}`
+
+            const cbody = document.createElement('p')
+            cbody.innerText = "body of post1"
+            
+            document.body.appendChild(cdiv)
+            cdiv.appendChild(cbar)
+            cdiv.appendChild(c)
+            if(posts[i].img){
+                const cimg = document.createElement('img')
+                cimg.src= posts[i].img
+                cdiv.appendChild(cimg)
+            }
+            
+            const cfoot = document.createElement('p')
+            // Oneliner sponsored by AI
+            cfoot.innerText = `by ${users[i]}, ${(() => { const d = new Date(); return `${["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][d.getMonth()]} ${d.getDate()}${["th", "st", "nd", "rd"][(d.getDate() % 10 > 3 || (d.getDate() % 100 >= 11 && d.getDate() % 100 <= 13)) ? 0 : d.getDate() % 10]} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; })()}`
+            
+
+            cdiv.appendChild(cbody)
+            cdiv.appendChild(cfoot)
+        }
+        
+
+    </script>
+</body>
+</html>
