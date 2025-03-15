@@ -11,3 +11,8 @@ libmicrohttpd-1.0.1
 libmicrohttpd-*
 .vendor_committed
 *.go
+api/package.json
+api/tieba.mjs
+emsdk/
+my-wasm-app/
+public/
