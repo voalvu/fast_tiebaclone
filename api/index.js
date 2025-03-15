@@ -1,5 +1,3 @@
-import fs from 'fs';
-import path from 'path';
 import wasmModule from './tieba.mjs';
 
 export default async function handler(request) {
@@ -7,23 +5,9 @@ export default async function handler(request) {
     const { method } = request;
     const body = method === 'POST' ? await request.text() : null;
 
-    // Define the path to the WASM file
-    const wasmPath = path.join(__dirname, 'tieba.wasm');
-
-    // Check if the WASM file exists
-    if (!fs.existsSync(wasmPath)) {
-      throw new Error('WASM file not found at ' + wasmPath);
-    }
-
     // Initialize WASM module
     const module = await wasmModule({
-      noInitialRun: true,
-      locateFile: (file) => {
-        if (file === 'tieba.wasm') {
-          return wasmPath;
-        }
-        return file;
-      }
+      noInitialRun: true
     });
 
     const handleRequest = module.cwrap('handle_request', 'string', ['string', 'string']);
