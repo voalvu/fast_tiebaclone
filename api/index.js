@@ -8,7 +8,7 @@ export default async function handler(request) {
     const { method } = request;
     const body = method === 'POST' ? await request.text() : null;
 
-    // Initialize WASM module
+    // Initialize WASM module asynchronously
     const module = await wasmModule({
       noInitialRun: true
     });
@@ -16,12 +16,12 @@ export default async function handler(request) {
     const handleRequest = module.cwrap('handle_request', 'string', ['string', 'string']);
     const response = handleRequest(method.toUpperCase(), body || "");
 
-    // Parse the response correctly
+    // Parse the response
     const [headersSection, content] = response.split('\r\n\r\n');
     const headerLines = headersSection.split('\r\n');
     const statusLine = headerLines[0]; // e.g., "HTTP/1.1 200 OK"
     const headers = headerLines.slice(1).filter(Boolean).map(h => h.split(': '));
-    const statusCode = parseInt(statusLine.split(' ')[1], 10); // Extract "200" from "HTTP/1.1 200 OK"
+    const statusCode = parseInt(statusLine.split(' ')[1], 10); // Extract status code
 
     return new Response(content || "", {
       status: statusCode,
