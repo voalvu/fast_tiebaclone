@@ -31,7 +31,7 @@ emcc tieba.c -o api/tieba.mjs \
   -s EXPORT_ES6=1 \
   -s EXPORTED_FUNCTIONS='["_handle_request"]' \
   -s EXPORTED_RUNTIME_METHODS='["cwrap"]' \
-  -s ENVIRONMENT=web,worker \  # Changed from just 'worker'
+  -s ENVIRONMENT=web,worker \
   -s SINGLE_FILE=1 \
   -s WASM_ASYNC_COMPILATION=1 \
   -s ALLOW_MEMORY_GROWTH=1 \
