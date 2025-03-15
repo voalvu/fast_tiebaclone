@@ -32,11 +32,11 @@ emcc tieba.c -o api/tieba.mjs \
   -s EXPORTED_FUNCTIONS='["_handle_request"]' \
   -s EXPORTED_RUNTIME_METHODS='["cwrap"]' \
   -s ENVIRONMENT=worker \
-  -s WASM=2 \
+  -s SINGLE_FILE=1 \
   -s WASM_ASYNC_COMPILATION=1 \
   -s ALLOW_MEMORY_GROWTH=1 \
+  -s ASSERTIONS=1 \
   -O3
-
 
 touch public/.gitkeep
 echo "Build successful"
