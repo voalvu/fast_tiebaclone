@@ -40,8 +40,8 @@ emcc tieba.c -o api/tieba.mjs \
 touch public/.gitkeep
 echo "Build successful"
 
-# Corrected sed command with proper capture group
-WASM_BINARY=$(sed -n "s|.*var[[:space:]]\+wasmBinary[[:space:]]*=[[:space:]]*['\"]\([^'\"]*\)['\"].*|\1|p" api/tieba.mjs)
+# Extract the WASM data URL directly using the data:application/octet-stream pattern
+WASM_BINARY=$(grep -oE "data:application/octet-stream;base64,[^']+" api/tieba.mjs | head -1)
 if [ -z "$WASM_BINARY" ]; then
   echo "Failed to extract WASM_BINARY"
   exit 1
