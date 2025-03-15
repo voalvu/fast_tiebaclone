@@ -31,11 +31,11 @@ emcc tieba.c -o api/tieba.mjs \
   -s EXPORT_ES6=1 \
   -s EXPORTED_FUNCTIONS='["_handle_request"]' \
   -s EXPORTED_RUNTIME_METHODS='["cwrap"]' \
-  -s ENVIRONMENT=web,worker \
+  -s ENVIRONMENT=node \
   -s SINGLE_FILE=1 \
-  -s WASM_ASYNC_COMPILATION=1 \
+  -s WASM_ASYNC_COMPILATION=0 \
   -s ALLOW_MEMORY_GROWTH=1 \
-  -s ASSERTIONS=1 \
+  -s ASSERTIONS=0 \
   -O3
 
 touch public/.gitkeep

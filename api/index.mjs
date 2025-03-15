@@ -1,9 +1,20 @@
-if (typeof self === 'undefined') {
+/* if (typeof self === 'undefined') {
   global.self = global;
 }
 if (typeof location === 'undefined') {
   global.location = { href: 'http://localhost:3000/' };
 }
+ */
+let modulePromise;
+
+async function initializeModule() {
+  if (!modulePromise) {
+    modulePromise = createModule({ noInitialRun: true });
+  }
+  return await modulePromise;
+}
+
+
 import createModule from './tieba.mjs';
 
 export default async function handler(request) {
